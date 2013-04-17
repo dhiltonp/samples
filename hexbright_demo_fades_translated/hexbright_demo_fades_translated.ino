@@ -18,12 +18,11 @@ hexbright hb;
 #define MODE_ON                 2
 
 byte mode;
-char brightness_direction = 0;
+char brightness_direction = -1;
 
 void setup()
 {
   hb.init_hardware();
-  
   mode = MODE_OFF;
 }
 
@@ -33,7 +32,7 @@ void loop()
   switch (mode)
   {
   case MODE_OFF:
-    if(hb.button_pressed()) {
+    if(hb.button_pressed_time()>200) {
       mode = MODE_FADE;
     }
     break;
@@ -43,12 +42,12 @@ void loop()
       if(!hb.light_change_remaining())
         if(brightness_direction<0)
         { // the light is low, go up from here
-          hb.set_light(CURRENT_LEVEL, 1000, 1000);  // go from low to high over 1 second
+          hb.set_light(CURRENT_LEVEL, 1000, 1000-(hb.get_light_level()));  // go from low to high over 1 second
           brightness_direction = 1;
         }
         else
         {
-          hb.set_light(CURRENT_LEVEL, 1, 1000); // go from high to low over 1 second
+          hb.set_light(CURRENT_LEVEL, 1, hb.get_light_level()); // go from high to low over 1 second
           brightness_direction = -1;
         }
     }
@@ -61,18 +60,18 @@ void loop()
     }
     break;
   case MODE_ON:
-    if (hb.button_pressed()<200 && hb.button_just_released())
+    if (!hb.button_pressed() && hb.button_just_released())
     {
-      hb.set_light(CURRENT_LEVEL, OFF_LEVEL, 50);
+      hb.set_light(0, OFF_LEVEL, NOW);
       mode = MODE_OFF;
     }
-    else if (hb.button_pressed()>200) 
+    else if (hb.button_pressed() && hb.button_pressed_time()>200)
     {
       mode = MODE_FADE;
       // so we continue going the same way as before
       brightness_direction = -brightness_direction;
     }
-    break;    
+    break;
   }
 }
 

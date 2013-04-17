@@ -45,9 +45,10 @@
 #define MODE_BLINKING_PREVIEW   5
 
 // State
-byte mode = 0;
-unsigned long btnTime = 0;
-boolean btnDown = false;
+byte mode;
+/*unsigned long btnTime = 0;
+boolean btnDown = false;*/
+// No longer used
 
 hexbright hb;
 
@@ -146,7 +147,7 @@ void loop()
   }
 */
   // once every 40 times we come through here, have the light pulse for 50 ms
-  if(mode == MODE_BLINKING || mode == MODE_BLINKING_PREVIEW) 
+  if(mode == MODE_BLINKING || mode == MODE_BLINKING_PREVIEW)
   {
     static int i = 0;
     i = (i+1)%40;
@@ -249,7 +250,6 @@ void loop()
 */    // already taken care of
       break;
     }
-
     mode = newMode;
   }
 
